@@ -101,31 +101,6 @@ class App < Sinatra::Application
     end
   end
 
-  # method get_supported_languages
-  # GET endpoint for obtaining supported languages.
-  #
-  # This method reads data from a local JSON file and returns a list of supported languages.
-  # If the data cannot be loaded, it returns an error message.
-  #
-  # return [JSON] The list of supported languages.
-  #
-  # raise [StandardError] If there is an error reading the file or parsing the JSON, it returns a 500 status code and an error message.
-  get '/obtener-lenguajes-soportados' do
-    languages_data = JSON.parse(File.read('languages.json'))
-
-    if languages_data.nil?
-      status 500
-      body 'Error al obtener la lista de lenguajes: No se pudieron cargar los datos.'
-    else
-      content_type :json
-      status 200
-      body languages_data['data']['languages'].to_json
-    end
-  rescue StandardError => e
-    status 500
-    body "Error al obtener la lista de lenguajes: #{e.message}"
-  end
-
   # method get_question
   # GET endpoint for handling displaying a trivia question.
   #
@@ -139,30 +114,6 @@ class App < Sinatra::Application
     index = params[:index].to_i
     fetch_question(index)
     erb :question, locals: {
-      question: @question,
-      trivia: @trivia,
-      question_index: @question_index,
-      answers: @answers,
-      time_limit_seconds: @time_limit_seconds,
-      help: @help
-    }
-  end
-
-  # method get_question_traduce
-  # GET endpoint for handling displaying a translated trivia question.
-  #
-  # param index [Integer] The index of the translated question to display.
-  #
-  # return [ERB] The translated question view for the specified trivia question.
-  #
-  # raise [Redirect] Redirects to '/results-traduce' if there are no more translated questions
-  # or if the trivia is complete.
-  # raise [Redirect] Redirects to '/error?code=unanswered' if the user tries to access
-  # translated questions out of order.
-  get '/question-traduce/:index' do
-    index = params[:index].to_i
-    fetch_question(index, true)
-    erb :question_traduce, locals: {
       question: @question,
       trivia: @trivia,
       question_index: @question_index,
@@ -196,14 +147,14 @@ class App < Sinatra::Application
   # questions or if the trivia is complete.
   # @raise [Redirect] Redirects to '/error?code=unanswered' if the user tries to access
   # questions out of order.
-  def fetch_question(index, translated = false)
+  def fetch_question(index)
     previous_index = index.zero? ? 0 : index - 1
     if index.zero? || session[:answered_questions].include?(previous_index)
-      question = translated ? @trivia.translated_questions[index] : @trivia.questions[index]
-      if question.nil? || (translated && index >= TRANSLATEDS_QUESTIONS) || (!translated && index >= QUESTIONS_SPANISH)
-        redirect translated ? '/results-traduce' : '/results'
+      question = @trivia.questions[index]
+      if question.nil? || index >= QUESTIONS_SPANISH
+        redirect '/results'
       else
-        @question = translated ? question['question'] : question
+        @question = question
         @answers = Answer.where(question_id: @question['id'])
         @time_limit_seconds = @trivia.difficulty.level == 'beginner' ? TIME_BEGINNER : TIME_DIFFICULTY
         @question_index = index
