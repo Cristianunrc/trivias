@@ -6,8 +6,6 @@ class Ranking < ActiveRecord::Base
   validates :user_id, presence: true
   validates :difficulty_id, presence: true
   validates :score, presence: true
-
-  #El score estara necesariamente entre 0 y 100
   validate :score_must_be_between_0_and_100
 
   private
