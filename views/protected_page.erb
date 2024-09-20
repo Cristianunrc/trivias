@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Trivia</title>
+  <script src="https://kit.fontawesome.com/8a2a68e2d5.js" crossorigin="anonymous"></script>
+  <link rel="icon" href="/icon.ico" type="image/x-icon">
+  <link rel="stylesheet" type="text/css" href="/css/protected.css">
+</head>
+<body>
+  <h1 id="select-language-title">Elige un lenguaje</h1>
+  <select id="select-language">
+    <option value="es" selected>Español (es)</option>
+  </select>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const spinner = document.querySelector('.lds-hourglass');
+      const selectLanguage = document.getElementById('select-language');
+      const triviaForm = document.getElementById('trivia-form');
+
+      spinner.style.display = 'none';
+
+      // mostrar el spinner al enviar el formulario
+      triviaForm.addEventListener('submit', function () {
+        spinner.style.display = 'block';
+
+        // Deshabilita el botón de envío para evitar envíos múltiples mientras se carga
+        const submitButton = triviaForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+      });
+
+      // Realiza una solicitud AJAX para obtener la lista de lenguajes desde tu backend
+      fetch('/obtener-lenguajes-soportados')
+        .then(response => response.json())
+        .then(data => {
+          // Oculta el spinner una vez que se carga la información
+          spinner.style.display = 'none';
+
+          if (Array.isArray(data)) {
+            data.forEach(language => {
+              const option = document.createElement('option');
+              option.value = language.code;
+              option.text = `${language.name} (${language.code})`; // Mostrar nombre y código
+              selectLanguage.appendChild(option);
+              console.log(`Añadida opción: ${language.name} (${language.code})`);
+            });
+
+            // Agregar un evento de cambio al selector de idioma
+            selectLanguage.addEventListener('change', function () {
+              const selectedLanguage = selectLanguage.value;
+              const selectedLanguageName = data.find(lang => lang.code === selectedLanguage)?.name;
+              console.log(`Idioma seleccionado: ${selectedLanguageName}`);
+              console.log(`Código de idioma seleccionado: ${selectedLanguage}`);
+
+              document.getElementById('selectedLanguageCode').value = selectedLanguage;
+              document.getElementById('selectedLanguageName').value = selectedLanguageName;
+
+              // Verifica si el idioma seleccionado es diferente al español (código 'es')
+              if (selectedLanguage !== 'es') {
+                // Cambia el formulario de acción al endpoint '/trivia-traduce'
+                triviaForm.action = '/trivia-traduce';
+              } else {
+                // Restaura el formulario de acción al endpoint '/trivia'
+                triviaForm.action = '/trivia';
+              }
+            });
+          } else {
+            console.error('La respuesta no es un array de lenguajes:', data);
+          }
+        })
+        .catch(error => {
+          console.error('Error al obtener la lista de lenguajes:', error);
+        });
+    });
+
+    window.onpageshow = function(event) {
+      if (event.persisted) {
+        const spinner = document.querySelector('.lds-hourglass');
+        spinner.style.display = 'none';
+      }
+    };
+  </script>
+
+  <div class="ranking-container">
+    <div class="ranking beginner-ranking">
+      <h3>Ranking Principiante</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Usuario</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% beginner_ranking.each_with_index do |ranking, index| %>
+            <% if ranking.user %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= ranking.user.username %></td>
+                <td><%= ranking.score %></td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="lds-hourglass"></div>
+    <div class="ranking difficulty-ranking">
+      <h3>Ranking Experto</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Usuario</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% difficult_ranking.each_with_index do |ranking, index| %>
+            <% if ranking.user %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= ranking.user.username %></td>
+                <td><%= ranking.score %></td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <h1>¡Hola <%= @username %>!</h1>
+  <p>¡Que comience el juego!</p>
+  <form id="trivia-form" method="post" action="/trivia">
+    <h2>Selecciona la dificultad de la trivia</h2>
+    <div class="button-container">
+      <button class="button" name="difficulty" value="beginner">
+        Principiante <i class="fa-regular fa-thumbs-up"></i>
+      </button>
+      <button class="button" name="difficulty" value="difficult">
+        Experto <i class="fa-solid fa-brain"></i>
+      </button>
+    </div>
+    <input type="hidden" name="selectedLanguageCode" id="selectedLanguageCode" value="">
+    <input type="hidden" name="selectedLanguageName" id="selectedLanguageName" value="">
+  </form>
+  <form action="/claim" method="get">
+    <button id="claim-button" type="submit">
+      Reclamo <i class="fa-solid fa-user-nurse"></i>
+    </button>
+  </form>
+  <form action="/" method="get">
+    <button class="button" id="logout-button" type="submit">
+      Salir <i class="fa-solid fa-right-to-bracket"></i>
+    </button>
+  </form>
+</body>
+</html>

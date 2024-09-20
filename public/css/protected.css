@@ -1,0 +1,246 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  line-height: 2.5;
+  text-align: center;
+  background-color: #fff;
+}
+
+h1 {
+  font-size: 30px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-right: 5px;
+  box-shadow: none;
+  transition: none;
+}
+
+button:hover {
+  background-color: #caff85;
+}
+
+#claim-button {
+  margin-top: 20px;
+}
+
+#logout-button {
+  background-color: #ff4c4c;
+  color: #fff;
+  margin-top: 20px;
+  font-size: 20px;
+  width: 110px;
+}
+
+#logout-button:hover {
+  background-color: #ff8282;
+}
+
+.ranking-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin-top: 20px;
+}
+
+.ranking {
+  flex: 1;
+  max-width: 350px;
+  height: 400px;
+  background-color: #ffe066;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ranking h3 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.ranking table {
+  width: 100%;
+  text-align: center;
+}
+
+.ranking th,
+.ranking td {
+  padding: 8px;
+}
+
+.ranking th {
+  background-color: #333;
+  color: #fff;
+}
+
+.ranking td {
+  background-color: #f1f1f1;
+}
+
+.ranking td:first-child {
+  font-weight: bold;
+}
+
+.ranking td:nth-child(2) {
+  text-align: left;
+}
+
+.ranking td:last-child {
+  font-weight: bold;
+}
+
+.ranking::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ranking::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ranking::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.ranking::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+#select-language-title {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#select-language {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+select#select-language:hover {
+  background-color: lightblue;
+}
+
+#select-language option {
+  font-size: 16px;
+  background-color: #fff;
+  color: #333;
+}
+
+#select-language:focus {
+  border: 1px solid #caff85;
+  outline: none;
+}
+
+#select-language option:hover {
+  background-color: lightblue;
+}
+
+/* Estilo para centrar el contenedor */
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Esto garantiza que el contenedor ocupe toda la altura de la ventana */
+}
+
+/* Estilo para el indicador de carga */
+#loading-container {
+  display: none; /* Inicialmente oculto */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo para el indicador de carga */
+.lds-hourglass {
+  /* Posición en el centro de la página */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  z-index: 9999;
+}
+
+.lds-hourglass:after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  width: 0;
+  height: 0;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 32px solid #333;
+  border-color: #333 transparent #333 transparent;
+  animation: lds-hourglass 1.2s infinite;
+}
+
+@keyframes lds-hourglass {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}
