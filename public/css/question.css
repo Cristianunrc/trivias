@@ -1,4 +1,3 @@
-
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -160,8 +159,6 @@ button:hover {
   font-family: 'Helvetica', Arial, sans-serif;
 }
 
-/* Resto de estilos del recuadro de respuesta */
-
 .q-autocomplete-input:focus {
   outline: none;
 }
@@ -170,7 +167,6 @@ button:hover {
   color: #999;
 }
 
-/* Estilos para el botón de submit */
 button[type="submit"] {
   background-color: #fff;
   border: 1px solid #333;
@@ -187,7 +183,6 @@ button[type="submit"]:hover {
   background-color: #caff85;
 }
 
-/* Estilos para mensaje de ayuda */
 .help-container p {
   font-size: 22px;
   font-weight: bold;
@@ -203,8 +198,7 @@ button[type="submit"]:hover {
 }
 
 .Toastify__toast {
-  font-size: 20px !important; /* Ajusta el tamaño del texto */
-  min-width: 300px !important; /* Ajusta el ancho mínimo de la notificación */
-  max-width: 80% !important; /* Ajusta el ancho máximo de la notificación */
+  font-size: 20px !important;
+  min-width: 300px !important;
+  max-width: 80% !important;
 }
-
