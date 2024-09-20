@@ -130,25 +130,9 @@ class TriviaController < Sinatra::Base
   # @return [ActiveRecord::Relation<Question>] A collection of question records.
   def random_questions(question_count, question_type, difficulty)
     difficulty.questions
-              .where(type: question_type, is_question_translated: false)
+              .where(type: question_type)
               .order('RANDOM()')
               .limit(question_count)
-  end
-
-  # @!method get_translated_questions
-  # Retrieves a subset of questions for translation based on the difficulty level.
-  #
-  # This method selects a random set of questions that have not been translated yet,
-  # limited to the number needed for a trivia game.
-  #
-  # @param difficulty [Difficulty] The difficulty level of the trivia game.
-  # @return [ActiveRecord::Relation<Question>] A collection of question records ready for translation.
-  def get_translated_questions(difficulty)
-    difficulty.questions
-              .where(type: %w[Choice True_False])
-              .where(is_question_translated: false)
-              .order('RANDOM()')
-              .limit(5)
   end
 
   # @!method post_trivia
