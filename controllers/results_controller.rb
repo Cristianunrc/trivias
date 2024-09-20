@@ -187,17 +187,4 @@ class ResultsController < Sinatra::Base
     end
   end
 
-  # GET endpoint for displaying the results of the translated trivia.
-  #
-  # @!method get('/results-traduce')
-  # This endpoint sets up the view for translated trivia results with an offset and calculates scores.
-  # It renders the translated results template with the calculated results and scores.
-  #
-  # @return [ERB] the results_traduce template displaying translated trivia results
-  # @see setup_view_and_calculate_scores
-  get '/results-traduce' do
-    @trivia = Trivia.find(session[:trivia_id])
-    setup_view_and_calculate_scores(5, session)
-    erb :results_traduce, locals: { results: @results, score: @score }
-  end
 end
