@@ -9,26 +9,24 @@ body {
   min-height: 100vh;
   line-height: 2.5;
   text-align: center;
-  background-color: #fff;
+  background: linear-gradient(to right, #237A57, #093028);
 }
 
 h1 {
   font-size: 30px;
   margin-top: 0;
-  margin-bottom: 20px;
-  color: #333;
+  color: #f1f1f1;
 }
 
 p {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 20px;
+  color: #f1f1f1;
 }
 
 h2 {
   font-size: 20px;
   margin-bottom: 10px;
-  color: #333;
+  color: #f1f1f1;
 }
 
 .button-container {
@@ -81,7 +79,7 @@ button:hover {
   flex: 1;
   max-width: 350px;
   height: 400px;
-  background-color: #ffe066;
+  background: linear-gradient(to top, #52c234, #061700);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -92,9 +90,9 @@ button:hover {
 }
 
 .ranking h3 {
-  font-size: 28px;
+  font-size: 22px;
   margin-bottom: 20px;
-  color: #333;
+  color: #f1f1f1;
 }
 
 .ranking table {
@@ -146,17 +144,15 @@ button:hover {
   background: #555;
 }
 
-/* Estilo para centrar el contenedor */
 .center-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Esto garantiza que el contenedor ocupe toda la altura de la ventana */
+  height: 100vh;
 }
 
-/* Estilo para el indicador de carga */
 #loading-container {
-  display: none; /* Inicialmente oculto */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
