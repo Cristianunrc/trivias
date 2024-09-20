@@ -21,11 +21,7 @@ class TriviaController < Sinatra::Base
   # @see finalize_trivia_setup
   def setup_trivia(params, session, translate:)
     user, difficulty, trivia = get_user_difficulty_trivia(params, session)
-    if translate
-      setup_translated_trivia(trivia, difficulty, params[:selectedLanguageCode])
-    else
-      setup_standard_trivia(trivia, difficulty)
-    end
+    setup_standard_trivia(trivia, difficulty)
     finalize_trivia_setup(trivia, session)
   end
 
@@ -64,26 +60,6 @@ class TriviaController < Sinatra::Base
     choice_count, true_false_count, autocomplete_count = get_questions_count(difficulty.level)
     questions = get_questions(choice_count, true_false_count, autocomplete_count, difficulty)
     trivia.questions.concat(questions)
-  end
-
-  # @!method setup_translated_trivia
-  # Sets up translated trivia questions for the game.
-  #
-  # This method fetches a set of standard questions and then creates translated versions of those questions and answers
-  # in the selected language. It then adds these translated questions to the trivia.
-  #
-  # @param trivia [Trivia] The trivia object to which the translated questions will be added.
-  # @param difficulty [Difficulty] The difficulty object that determines which questions to translate.
-  # @param selected_language_code [String] The language code representing the target language for translation.
-  # @return [void]
-  # @see get_translated_questions
-  # @see create_translated_questions_and_answers
-  def setup_translated_trivia(trivia, difficulty, selected_language_code)
-    trivia.selected_language_code = selected_language_code
-    choice_and_true_false_questions = get_translated_questions(difficulty)
-    trivia.questions.concat(choice_and_true_false_questions)
-    translated_questions, translated_answers = create_translated_questions_and_answers(trivia, trivia.questions)
-    trivia.translated_questions = translated_questions
   end
 
   # @!method finalize_trivia_setup
@@ -154,120 +130,9 @@ class TriviaController < Sinatra::Base
   # @return [ActiveRecord::Relation<Question>] A collection of question records.
   def random_questions(question_count, question_type, difficulty)
     difficulty.questions
-              .where(type: question_type, is_question_translated: false)
+              .where(type: question_type)
               .order('RANDOM()')
               .limit(question_count)
-  end
-
-  # @!method create_translated_questions_and_answers
-  # Creates translated versions of the provided questions and their answers.
-  #
-  # Iterates over a collection of questions, translating their text and associated help text.
-  # Translated questions and their corresponding answers are then created in the database.
-  #
-  # @param trivia [Trivia] The trivia object for which questions are being translated.
-  # @param questions [Array<Question>] An array of question objects to be translated.
-  # @return [Array<Array, Array>] A two-element array containing the translated questions and answers.
-  def create_translated_questions_and_answers(trivia, questions)
-    translated_questions = []
-    translated_answers = []
-    questions.each do |question|
-      translated_question_text = translate_to_selected_language(question.text, trivia.selected_language_code)
-      translated_help_text = translate_to_selected_language(question.help, trivia.selected_language_code) if question.difficulty.level == 'beginner'
-      translated_question = case question
-                            when Choice
-                              { 'question_type' => 'Choice', 'question' => Choice.create!(
-                                text: translated_question_text,
-                                difficulty: question.difficulty,
-                                is_question_translated: true,
-                                help: translated_help_text
-                              ) }
-                            when True_False
-                              { 'question_type' => 'True_False', 'question' => True_False.create!(
-                                text: translated_question_text,
-                                difficulty: question.difficulty,
-                                is_question_translated: true,
-                                help: translated_help_text
-                              ) }
-                            end
-      translated_questions << translated_question
-      translated_question_answers = []
-      answers = Answer.where(question: question)
-      answers.each do |answer|
-        is_an_autocomplete = answer.question.is_a?(Autocomplete)
-        translated_answer_text = translate_to_selected_language(answer.text, trivia.selected_language_code) unless is_an_autocomplete
-        translated_answer = if is_an_autocomplete
-                              Answer.create!(text: translated_answer_text, question_id: translated_question['question']['id'])
-                            else
-                              Answer.create!(text: translated_answer_text, question_id: translated_question['question']['id'], correct: answer.correct)
-                            end
-        translated_question_answers << translated_answer
-      end
-      translated_answers << translated_question_answers
-    end
-    [translated_questions, translated_answers]
-  end
-
-  # @!method get_translated_questions
-  # Retrieves a subset of questions for translation based on the difficulty level.
-  #
-  # This method selects a random set of questions that have not been translated yet,
-  # limited to the number needed for a trivia game.
-  #
-  # @param difficulty [Difficulty] The difficulty level of the trivia game.
-  # @return [ActiveRecord::Relation<Question>] A collection of question records ready for translation.
-  def get_translated_questions(difficulty)
-    difficulty.questions
-              .where(type: %w[Choice True_False])
-              .where(is_question_translated: false)
-              .order('RANDOM()')
-              .limit(5)
-  end
-
-  # @!method translate_to_selected_language(text, target_language)
-  # Translates a given text to the selected language.
-  #
-  # This method sends a POST request to a translation API with the text to be translated and the target language.
-  # It then parses the JSON response and returns the translated text.
-  # If there is an error with the request or parsing the response, it outputs an error message and returns nil.
-  #
-  # @param [String] text The text to be translated.
-  # @param [String] target_language The language to translate the text into.
-  #
-  # @return [String, nil] The translated text if successful, or nil if there was an error.
-  #
-  # @raise [StandardError] If there is an error with the request or parsing the response, it outputs an error message and returns nil.
-  def translate_to_selected_language(text, target_language)
-    url = URI('https://text-translator2.p.rapidapi.com/translate')
-
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-
-    request = Net::HTTP::Post.new(url)
-    request['content-type'] = 'application/x-www-form-urlencoded'
-    request['X-RapidAPI-Key'] = ENV['TEXT_TRANSLATOR_KEY']
-    request['X-RapidAPI-Host'] = 'text-translator2.p.rapidapi.com'
-    query = URI.encode_www_form(
-      source_language: 'es',
-      target_language: target_language,
-      text: text
-    )
-    request.body = query
-    response = http.request(request)
-
-    if response.code == '200'
-      response_data = JSON.parse(response.body)
-
-      if response_data.key?('data') && response_data['data'].key?('translatedText')
-        return response_data['data']['translatedText']
-      else
-        puts "Error: No se encontró 'translatedText' en la respuesta."
-        return nil
-      end
-    else
-      puts "Error al traducir: #{response.message}"
-      return nil
-    end
   end
 
   # @!method post_trivia
@@ -285,19 +150,4 @@ class TriviaController < Sinatra::Base
     redirect '/question/0'
   end
 
-  # @!method post_trivia_traduce
-  # Post endpoint that handles the initiation of a translated trivia game.
-  #
-  # This endpoint is responsible for setting up a new trivia game with questions translated
-  # into the selected language. It sets up the trivia using provided parameters and session information,
-  # including the language code for translations, and then redirects the user to the first question
-  # of the translated trivia game.
-  #
-  # @param params [Hash] The parameters from the POST request, including difficulty level and selected language code.
-  # @param session [Hash] The session object to store trivia state.
-  # @return [Redirect] A redirect to the first question of the new translated trivia game.
-  post '/trivia-traduce' do
-    setup_trivia(params, session, translate: true)
-    redirect '/question-traduce/0'
-  end
 end

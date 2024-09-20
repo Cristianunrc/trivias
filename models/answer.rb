@@ -2,7 +2,6 @@ class Answer < ActiveRecord::Base
   belongs_to :question, polymorphic: true
   has_many :question_answers
   has_many :questions, through: :question_answers
-  #indicacion a active record para que reconozca la columna como arreglo
   serialize :answers_autocomplete, JSON
 
   validates :question_id, presence: true
@@ -13,7 +12,6 @@ class Answer < ActiveRecord::Base
   private
 
   def autocomplete_question?
-    # Verifica si la pregunta asociada es de tipo Autocomplete
     question.is_a?(Autocomplete)
   end
 end

@@ -16,10 +16,8 @@ class AnswerController < Sinatra::Base
     # @param [String] path_prefix The prefix of the redirect path.
     def handle_answer(index, question, trivia, path_prefix, params, session)
       selected_answer_id = params[:selected_answer]
-      is_translated = trivia.selected_language_code != 'es'
-      question_id = is_translated ? question['id'] : question.id
+      question_id = question.id
       selected_answer = Answer.find_by(id: selected_answer_id, question_id: question_id)
-
       if selected_answer.nil? && !question.is_a?(Autocomplete)
         handle_unanswered_question(index, path_prefix, session)
       else
@@ -80,7 +78,6 @@ class AnswerController < Sinatra::Base
       response_time = total_time - params[:response_time].to_i
       question_answer = QuestionAnswer.find_by(question_id: question_id, trivia_id: trivia.id)
       question_answer&.update(response_time: response_time)
-
       next_index = index + 1
       redirect "#{path_prefix}/#{next_index}"
     end
@@ -142,31 +139,4 @@ class AnswerController < Sinatra::Base
       end
     end
 
-    # @!method post_answer_traduce
-    # POST endpoint for submitting an answer to a translated trivia question.
-    #
-    # This route handles the submission of an answer to a translated trivia question. It checks if the trivia session exists,
-    # validates the submitted answer, and records the response time. Depending on the answer type (choice, true/false, or autocomplete),
-    # it updates the appropriate tables in the database and redirects to the next question or results page.
-    #
-    # @param [Integer] index The index of the current question.
-    #
-    # @return [Redirect] Redirects to the next question or results page.
-    #
-    # @raise [Redirect] If there is no trivia in session, redirects to '/trivia'.
-    # @raise [Redirect] If there are no more questions or if index is greater or equal to 5, redirects to '/results-traduce'.
-    # @raise [Redirect] If the question has already been answered, redirects to '/error?code=answered'.
-    post '/answer-traduce/:index' do
-      @trivia = Trivia.find(session[:trivia_id])
-      index = params[:index].to_i
-      question_hash = @trivia.translated_questions[index]
-
-      if question_hash.nil? || index >= TRANSLATEDS_QUESTIONS
-        redirect '/results-traduce'
-      elsif session[:answered_questions].include?(index)
-        redirect '/error?code=answered'
-      else
-        handle_answer(index, question_hash['question'], @trivia, '/question-traduce', params, session)
-      end
-    end
 end
