@@ -1,5 +1,3 @@
-ruby '2.7.8'
-
 source "https://rubygems.org"
 
 gem 'multi_json'
@@ -33,3 +31,4 @@ gem 'faker'
 gem 'sinatra-cross_origin', '~> 0.3.1'
 gem 'sanitize'
 gem 'mail'
+gem 'nokogiri', '< 1.15.4'
