@@ -14,19 +14,13 @@ body {
 h1 {
   font-size: 40px;
   margin-bottom: 20px;
-  color: #000000;
+  color: white;
 }
 
 p {
   font-size: 24px;
   margin-bottom: 20px;
-  color: #000000;
-}
-
-h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #000000;
+  color: white;
 }
 
 .answer-container {
@@ -148,6 +142,7 @@ button:hover {
 }
 
 .q-autocomplete-input {
+  background: #e0e0e0;;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -164,7 +159,7 @@ button:hover {
 }
 
 .q-autocomplete-input::placeholder {
-  color: #999;
+  color: #9999;
 }
 
 button[type="submit"] {
