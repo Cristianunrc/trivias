@@ -151,7 +151,7 @@ class App < Sinatra::Application
     previous_index = index.zero? ? 0 : index - 1
     if index.zero? || session[:answered_questions].include?(previous_index)
       question = @trivia.questions[index]
-      if question.nil? || index >= QUESTIONS_SPANISH
+      if question.nil? || index >= TIME_DIFFICULTY
         redirect '/results'
       else
         @question = question
