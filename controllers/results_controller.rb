@@ -151,7 +151,7 @@ class ResultsController < Sinatra::Base
   # It handles redirection if no trivia is in session, retrieves user and difficulty,
   # calculates results and score, and updates user ranking.
   #
-  # @param offset [Integer, nil] the offset to start retrieving question answers (used for translated results)
+  # @param offset [Integer, nil] the offset to start retrieving question answers
   # @return [void]
   # @raise [Redirect] if there is no trivia in session, redirects to '/trivia'
   # @see QuestionAnswer
