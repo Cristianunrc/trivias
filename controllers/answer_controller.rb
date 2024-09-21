@@ -123,7 +123,8 @@ class AnswerController < Sinatra::Base
     # @return [Redirect] Redirects to the next question or results page.
     #
     # @raise [Redirect] If there is no trivia in session, redirects to '/trivia'.
-    # @raise [Redirect] If there are no more questions or if index is greater or equal to 10, redirects to '/results'.
+    # @raise [Redirect] If there are no more questions or if index is greater or equal to TIME_DIFFICULTY,
+    # redirects to '/results'.
     # @raise [Redirect] If the question has already been answered, redirects to '/error?code=answered'.
     post '/answer/:index' do
       @trivia = Trivia.find(session[:trivia_id])
