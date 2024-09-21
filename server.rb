@@ -143,7 +143,7 @@ class App < Sinatra::Application
   # return [void]
   #
   # raise [Redirect] Redirects to '/trivia' if there's no active trivia session.
-  # raise [Redirect] Redirects to '/results' or '/results-traduce' if there are no more
+  # raise [Redirect] Redirects to '/results' if there are no more
   # questions or if the trivia is complete.
   # @raise [Redirect] Redirects to '/error?code=unanswered' if the user tries to access
   # questions out of order.
