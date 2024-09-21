@@ -142,7 +142,6 @@ button:hover {
 }
 
 .q-autocomplete-input {
-  background: #e0e0e0;;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -159,7 +158,7 @@ button:hover {
 }
 
 .q-autocomplete-input::placeholder {
-  color: #9999;
+  color: #999;
 }
 
 button[type="submit"] {
