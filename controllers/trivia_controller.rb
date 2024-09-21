@@ -8,16 +8,14 @@ class TriviaController < Sinatra::Base
   # Sets up a trivia game with standard or translated questions based on the parameters.
   #
   # This method orchestrates the creation of a trivia game by calling methods to initialize
-  # the trivia object, setting up either standard or translated trivia questions, and then
+  # the trivia object, setting up either standard trivia questions, and then
   # finalizing the trivia setup by saving it and setting up the session.
   #
   # @param params [Hash] The request parameters containing the difficulty level and, if applicable, the selected language code for translations.
   # @param session [Hash] The current user's session for retrieving user data and storing the trivia session.
-  # @param translate [Boolean] Flag to determine if the trivia should be set up with translated questions.
   # @return [void]
   # @see get_user_difficulty_trivia
   # @see setup_standard_trivia
-  # @see setup_translated_trivia
   # @see finalize_trivia_setup
   def setup_trivia(params, session)
     user, difficulty, trivia = get_user_difficulty_trivia(params, session)
