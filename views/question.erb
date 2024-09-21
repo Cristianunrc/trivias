@@ -10,149 +10,23 @@
   <!-- Toastify -->
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <script>
-     function validateForm() {
-      var selectedOption = document.querySelector('input[name="selected_answer"]:checked');
-      var timeRemaining = parseInt($('#timer').text());
-
-      if (!selectedOption && timeRemaining > 0) {
-        showMessage("Debe seleccionar una respuesta antes de continuar.");
-        return false;
-      }
-      if (!selectedOption) {
-        document.querySelector('input[name="selected_answer"]').value = null;
-      }
-      // Obtener el tiempo restante del temporizador
-      var timeRemaining = parseInt($('#timer').text());
-
-      // Establecer el tiempo de respuesta en el campo oculto
-      $('#response_time').val(timeRemaining);
-      return true;
-    }
-
-    function autocompleteValidateForm() {
-      var autocompleteInput = document.getElementById('autocomplete-input');
-      var timeRemaining = parseInt($('#timer').text());
-
-      if (autocompleteInput.value.trim().length === 0 && timeRemaining > 0) {
-        showMessage("Debe ingresar al menos un carácter antes de continuar.");
-        return false;
-      }
-      var timeRemaining = parseInt($('#timer').text());
-      $('#response_time').val(timeRemaining);
-      return true;
-    }
-
-    function showMessage(message) {
-      var overlay = document.createElement("div");
-      overlay.classList.add("overlay");
-
-      var messageContainer = document.createElement("div");
-      messageContainer.classList.add("message-container");
-      messageContainer.innerHTML = 
-        `
-          <div class="message-box">
-            <p>${message}</p>
-            <button id="entendido-btn" class="button-style">Entendido</button>
-          </div>
-        `;
-      overlay.appendChild(messageContainer);
-      document.body.appendChild(overlay);
-
-      var entendidoBtn = document.getElementById("entendido-btn");
-      entendidoBtn.addEventListener("click", function() {
-        overlay.remove();
-      });
-    }
-
-     function startTimer(duration, display) {
-        var timerContainer = document.getElementById("timer-container");
-        var timer = duration, seconds;
-        var triviaDifficultyLevel = "<%= @trivia.difficulty.level%>";
-        timerContainer.className = "green";
-        var intervalId = setInterval(function () {
-          seconds = parseInt(timer % 60, 10);
-          display.text(seconds);
-          timer--;
-          if (triviaDifficultyLevel == "beginner") {
-            if (timer >= 10){
-              timerContainer.className = "green";
-            } else if (timer >= 5){
-              timerContainer.className = "yellow";
-            } else if (timer >= 0){
-              timerContainer.className = "red";
-            } else {
-              clearInterval(intervalId);
-              showTimeUpMessage();
-            }
-          } else if (triviaDifficultyLevel == "difficult") {
-              if (timer >= 7){
-                timerContainer.className = "green";
-              } else if (timer >= 4){
-                timerContainer.className = "yellow";
-              } else if (timer >= 0){
-                timerContainer.className = "red";
-              } else {
-                clearInterval(intervalId);
-                showTimeUpMessage();
-              }
-          }
-        }, 1000);
-      }
-
-     $(document).ready(function () {
-      var timeLimit = parseInt($("#timer-container").data("time-limit-seconds"));
-      var display = $("#timer");
-      startTimer(timeLimit, display);
-    });
-
-    var isHelpVisible = false;
-    function showHelp(helpText) {
-      if (isHelpVisible) {
-        return;
-      }
-
-      function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-      }
-
-      Toastify({
-        text: helpText,
-        duration: 7000,
-        position: 'left',
-        close: true,
-        backgroundColor: getRandomColor(),
-        style: {
-          fontSize: '20px',
-          minWidth: '200px',
-          maxWidth: '70%',
-        },
-        callback: function() {
-          isHelpVisible = false;
-        }
-      }).showToast();
-
-      isHelpVisible = true;
-    }
-  </script>
 </head>
 <body>
   <h1>Pregunta <%= @question_index + 1 %></h1>
   <% if @question %>
     <p><%= @question.text %></p>
     <% if @question.is_a?(Autocomplete) %>
-      <h2>Ingrese su respuesta</h2>
       <form action="/answer/<%= @question_index %>" method="post" onsubmit="return autocompleteValidateForm()">
         <input type="hidden" name="response_time" id="response_time" value="">
         <input type="hidden" name="trivia_id" value="<%= @trivia.id %>">
         <input type="hidden" name="question_index" value="<%= @question_index %>">
         <div class="q-autocomplete-container">
-          <input type="text" id="autocomplete-input" name="autocomplete_input" class="q-autocomplete-input">
+          <input
+            type="text" 
+            id="autocomplete-input"
+            name="autocomplete_input"
+            class="q-autocomplete-input"
+            placeholder="Ingrese su respuesta">
         </div>
         <div id="timer-container" data-time-limit-seconds="<%= @time_limit_seconds %>">
           <span id="timer"></span>
@@ -172,7 +46,6 @@
         </div>
       </form>
     <% else %>
-      <h2>Opciones</h2>
       <form action="/answer/<%= @question_index %>" method="post" onsubmit="return validateForm()">
         <input type="hidden" name="response_time" id="response_time" value="">
         <input type="hidden" name="trivia_id" value="<%= @trivia.id %>">
@@ -209,38 +82,169 @@
     <% end %>
     <div id="message-box-container"></div>
     <script>
-      function showTimeUpMessage() {
+      function validateForm() {
+        var selectedOption = document.querySelector('input[name="selected_answer"]:checked');
+        var timeRemaining = parseInt($('#timer').text());
+        if (!selectedOption && timeRemaining > 0) {
+          showMessage("Debe seleccionar una respuesta antes de continuar.");
+          return false;
+        }
+        if (!selectedOption) {
+          document.querySelector('input[name="selected_answer"]').value = null;
+        }
+        var timeRemaining = parseInt($('#timer').text());
+        $('#response_time').val(timeRemaining);
+        return true;
+      }
+
+      function autocompleteValidateForm() {
+        var autocompleteInput = document.getElementById('autocomplete-input');
+        var timeRemaining = parseInt($('#timer').text());
+        if (autocompleteInput.value.trim().length === 0 && timeRemaining > 0) {
+          showMessage("Debe ingresar al menos un carácter antes de continuar.");
+          return false;
+        }
+        var timeRemaining = parseInt($('#timer').text());
+        $('#response_time').val(timeRemaining);
+        return true;
+      }
+
+      function showMessage(message) {
         var overlay = document.createElement("div");
         overlay.classList.add("overlay");
         var messageContainer = document.createElement("div");
         messageContainer.classList.add("message-container");
-        messageContainer.innerHTML = `
-          <div class="message-box">
-            <p>Se terminó el tiempo, respuesta marcada como incorrecta</p>
-            <button id="entendido-btn" class="button-style" onclick="nextQuestion()">Entendido</button>
-          </div>
-        `;
+        messageContainer.innerHTML = 
+          `
+            <div class="message-box">
+              <p style="color: black;">${message}</p>
+              <button id="entendido-btn" class="button-style" style="color: black">Entendido</button>
+            </div>
+          `;
         overlay.appendChild(messageContainer);
         document.body.appendChild(overlay);
         var entendidoBtn = document.getElementById("entendido-btn");
-        entendidoBtn.addEventListener("click", function () {
-          var autocompleteInput = document.getElementById("autocomplete-input");
-          if (autocompleteInput) {
-            autocompleteInput.value = null;
-          } else {
-            document.querySelector('input[name="selected_answer"]').value = null;
-          }
+        entendidoBtn.addEventListener("click", function() {
           overlay.remove();
-          nextQuestion();
         });
       }
 
-     function nextQuestion() {
-       document.querySelector("form").submit();
-     }
+      function startTimer(duration, display) {
+        var timerContainer = document.getElementById("timer-container");
+        var timer = duration, seconds;
+        var triviaDifficultyLevel = "<%= @trivia.difficulty.level%>";
+        timerContainer.className = "green";
+        var intervalId = setInterval(function () {
+          seconds = parseInt(timer % 60, 10);
+          display.text(seconds);
+          timer--;
+          if (triviaDifficultyLevel == "beginner") {
+            if (timer >= 10){
+              timerContainer.className = "green";
+            } else if (timer >= 5){
+              timerContainer.className = "yellow";
+            } else if (timer >= 0){
+              timerContainer.className = "red";
+            } else {
+              clearInterval(intervalId);
+              showTimeUpMessage();
+            }
+          } else if (triviaDifficultyLevel == "difficult") {
+              if (timer >= 7){
+                timerContainer.className = "green";
+              } else if (timer >= 4){
+                timerContainer.className = "yellow";
+              } else if (timer >= 0){
+                timerContainer.className = "red";
+              } else {
+                clearInterval(intervalId);
+                showTimeUpMessage();
+              }
+          }
+        }, 1000);
+      }
+
+    $(document).ready(function () {
+      var timeLimit = parseInt($("#timer-container").data("time-limit-seconds"));
+      var display = $("#timer");
+      startTimer(timeLimit, display);
+    });
+
+    var isHelpVisible = false;
+    function showHelp(helpText) {
+      if (isHelpVisible) {
+        return;
+      }
+      function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      Toastify({
+        text: helpText,
+        duration: 7000,
+        position: 'left',
+        close: true,
+        backgroundColor: getRandomColor(),
+        style: {
+          fontSize: '20px',
+          minWidth: '200px',
+          maxWidth: '70%',
+        },
+        callback: function() {
+          isHelpVisible = false;
+        }
+      }).showToast();
+      isHelpVisible = true;
+    }
+
+    function showTimeUpMessage() {
+      var overlay = document.createElement("div");
+      overlay.classList.add("overlay");
+      var messageContainer = document.createElement("div");
+      messageContainer.classList.add("message-container");
+      messageContainer.innerHTML = `
+        <div class="message-box">
+          <p style="color: black;">Se terminó el tiempo, respuesta marcada como incorrecta</p>
+          <button id="entendido-btn" class="button-style" onclick="nextQuestion()">Entendido</button>
+        </div>
+      `;
+      overlay.appendChild(messageContainer);
+      document.body.appendChild(overlay);
+      var entendidoBtn = document.getElementById("entendido-btn");
+      entendidoBtn.addEventListener("click", function () {
+        var autocompleteInput = document.getElementById("autocomplete-input");
+        if (autocompleteInput) {
+          autocompleteInput.value = null;
+        } else {
+          document.querySelector('input[name="selected_answer"]').value = null;
+        }
+        overlay.remove();
+        nextQuestion();
+      });
+    }
+
+    function nextQuestion() {
+      document.querySelector("form").submit();
+    }
+
+    const inputField = document.getElementById('autocomplete-input');
+    inputField.addEventListener('focus', function() {
+      this.placeholder = '';
+    })
+
+    inputField.addEventListener('blur', function() {
+      if (this.value === '') {
+        this.placeholder = "Ingrese su respuesta";
+      }
+    })
    </script>
   <% else %>
-    <h2>No se encontró la pregunta</h2>
+    <p>No se encontró la pregunta</p>
   <% end %>
 </body>
 </html>
