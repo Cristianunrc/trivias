@@ -1,5 +1,6 @@
 db/duo_development.sqlite3
 db/test.sqlite3
+db/production.sqlite3
 coverage/
 .env
 .bundle/
