@@ -130,7 +130,7 @@ class AnswerController < Sinatra::Base
       index = params[:index].to_i
       question = @trivia.questions[index]
 
-      if question.nil? || index >= QUESTIONS_SPANISH
+      if question.nil? || index >= TIME_DIFFICULTY
         redirect '/results'
       elsif session[:answered_questions].include?(index)
         redirect '/error?code=answered'

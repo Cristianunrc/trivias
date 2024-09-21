@@ -19,7 +19,7 @@ class TriviaController < Sinatra::Base
   # @see setup_standard_trivia
   # @see setup_translated_trivia
   # @see finalize_trivia_setup
-  def setup_trivia(params, session, translate:)
+  def setup_trivia(params, session)
     user, difficulty, trivia = get_user_difficulty_trivia(params, session)
     setup_standard_trivia(trivia, difficulty)
     finalize_trivia_setup(trivia, session)
@@ -146,7 +146,7 @@ class TriviaController < Sinatra::Base
   # @param session [Hash] The session object to store trivia state.
   # @return [Redirect] A redirect to the first question of the new trivia game.
   post '/trivia' do
-    setup_trivia(params, session, translate: false)
+    setup_trivia(params, session)
     redirect '/question/0'
   end
 
