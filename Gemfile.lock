@@ -156,7 +156,6 @@ DEPENDENCIES
   mail
   multi_json
   net-http
-  nokogiri (< 1.15.4)
   rack-test
   rake
   rspec
